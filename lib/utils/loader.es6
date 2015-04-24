@@ -6,7 +6,7 @@ var utils = require(`${__dirname}/utils`),
 class Loader {
 
 	static load(filePath) {
-		var content = this.loadYaml(filePath),
+		var content = this.loadYaml(filePath) || {},
 			contents = [content];
 
 		if(!!content.imports) {
