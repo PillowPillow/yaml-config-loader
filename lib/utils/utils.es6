@@ -3,21 +3,11 @@ var fs = require('fs');
 class Utils {
 
 	static fileExists(filePath) {
-		return new Promise((resolve, reject) => {
-			fs.exists(filePath, (exists) => {
-				if(!!exists)
-					resolve();
-				else
-					reject('FileNotFound');
-			})
-		});
+		return fs.existsSync(filePath);
 	}
 
 	static loadFile(filePath) {
-		return new Promise((resolve, reject) =>
-			fs.readFile(filePath, 'utf8', (error, content) =>
-				error ? reject(error) : resolve(content))
-		);
+		return fs.readFileSync(filePath, 'utf8');
 	}
 
 	static isObject(value) {

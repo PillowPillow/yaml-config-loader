@@ -6,36 +6,32 @@ var utils = require(`${__dirname}/utils`),
 class Loader {
 
 	static load(filePath) {
-		return this.loadYaml(filePath)
-			.then((content) => {
-				var promise = Promise.resolve([]);
+		var content = this.loadYaml(filePath),
+			contents = [content];
 
-				if(!!content.imports) {
-					let directory = path.dirname(filePath),
-					promises = [];
-					for(let imp of content.imports)
-						if(!imp.if || env.test(imp.if))
-							promises.push(this.load(path.join(directory, imp.source)));
+		if(!!content.imports) {
+			let directory = path.dirname(filePath);
 
-					delete content.imports;
-					promise = Promise.all(promises);
-				}
+			for(let imp of content.imports)
+				if(!imp.if || env.test(imp.if))
+					contents = contents.concat(this.load(path.join(directory, imp.source)));
 
-				return promise
-					.then((results) => {
-						var contents = [content];
-						for(var result of results)
-							contents = contents.concat(result);
-						return contents;
-					});
-			});
+			delete content.imports;
+		}
 
+		return contents;
 	}
 
 	static loadYaml(filePath) {
-		return utils.fileExists(filePath)
-			.then(() => utils.loadFile(filePath))
-			.then((content) => yaml.load(content));
+		var exists = utils.fileExists(filePath),
+			content;
+
+		if(exists)
+			content = yaml.load(utils.loadFile(filePath));
+		else
+			throw Error('fileNotFound');
+
+		return content;
 	}
 
 }

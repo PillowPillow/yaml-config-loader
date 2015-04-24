@@ -1,4 +1,4 @@
-const RG_PARAM = /\$\{([a-zA-Z0-1\_\-\.\$\@]+)\}/g
+const RG_PARAM = /\$\{([a-zA-Z0-0\_\-\.\$\@]+)\}/g
 
 class Environment {
 
@@ -10,28 +10,43 @@ class Environment {
 		for(var prop in node)
 			if(node[prop] instanceof Object)
 				node[prop] = this.resolveAll(node[prop]);
-			else {
-				let matched;
-				while(matched = RG_PARAM.exec(node[prop])) {
-					let [,envVar] = matched,
-						value = this.resolve(envVar);
-
-					if(value !== undefined)
-						node[prop] = node[prop].replace(`\${${envVar}}`, value);
-				}
-			}
+			else
+				node[prop] = this.formatsValue(node[prop]);
 
 		return node;
+	}
+
+	static formatsValue(values = []) {
+
+		if(!(values instanceof Array))
+			values = [values];
+
+		for(var value of values) {
+
+			let matched;
+			while(matched = RG_PARAM.exec(value)) {
+				let [,envVar] = matched;
+				value = this.resolve(envVar);
+
+				if(value !== undefined)
+					value = value.replace(`\${${envVar}}`, value);
+			}
+
+		}
+
+		return value;
 	}
 
 	static test(conditions = {}) {
 
 		var result = true;
 		for(var key in conditions) {
-			let value = this.resolve(key);
-			if(value === undefined
-			|| (conditions[key] instanceof Array && !~conditions[key].indexOf(value))
-			|| (!(conditions[key] instanceof Array) && value !== conditions[key])) {
+			let resolvedKey = this.resolve(key),
+				resolvedValue = this.formatsValue(conditions[key]);
+
+			if(resolvedKey === undefined
+			|| (resolvedValue instanceof Array && !~resolvedValue.indexOf(resolvedKey))
+			|| (!(resolvedValue instanceof Array) && resolvedKey !== resolvedValue)) {
 				result = false;
 				break;
 			}

@@ -5,9 +5,10 @@ var loader = require(`${__dirname}/utils/loader`),
 class configLoader {
 
 	static load(path) {
-		return loader.load(path)
-			.then((contents) => utils.extends({}, contents, true))
-			.then((merged) => env.resolveAll(merged));
+		var contents = loader.load(path),
+			merged = utils.extends({}, contents, true);
+
+		return env.resolveAll(merged)
 	}
 
 }
