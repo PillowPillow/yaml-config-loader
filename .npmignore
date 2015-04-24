@@ -1,0 +1,14 @@
+.*.swp
+._*
+.DS_Store
+.git
+.gitignore
+.hg
+.lock-wscript
+.svn
+.wafpickle-*
+CVS
+npm-debug.log
+/.grunt
+/specs
+/lib/**/*.es6
