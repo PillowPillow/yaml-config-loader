@@ -13,146 +13,73 @@ const ENV = {
 describe('ConfigLoader', function() {
 
 	it(`should'nt loads the ${BAD_FILE_PATH} file`,
-		function(done) {
-
-			ConfigLoader.load(BAD_FILE_PATH)
-				.then(resolve)
-				.catch(() => {})
-				.then(() => done());
-
-			function resolve(object) {
-				expect(object).toBeUndefined();
-			}
+		function() {
+			expect(() => ConfigLoader.load(BAD_FILE_PATH)).toThrow();
 		})
 
 	it(`should loads the ${PARAMETER_FILE_PATH} file`,
-		function(done) {
-
-			ConfigLoader.load(PARAMETER_FILE_PATH)
-				.then(resolve)
-				.catch(reject)
-				.then(() => done());
-
-			function resolve(object) {
-				expect(object).toBeNonEmptyObject();
-			}
-
-			function reject(error) {
-				expect(error).toBeUndefined();
-			}
-
+		function() {
+			var configContent = ConfigLoader.load(PARAMETER_FILE_PATH);
+			expect(configContent).toBeNonEmptyObject();
 		})
 
 	it(`should load the ${CONFIG_FILE_PATH} file with its dependencies`,
-		function(done) {
+		function() {
 
-			Promise.all([
-				ConfigLoader.load(CONFIG_FILE_PATH),
-				ConfigLoader.load(PARAMETER_FILE_PATH)
-			])
-				.then(resolve)
-				.catch(reject)
-				.then(() => done());
+			var configContent = ConfigLoader.load(CONFIG_FILE_PATH),
+				parameterContent = ConfigLoader.load(PARAMETER_FILE_PATH);
 
-			function resolve(objects) {
-				expect(objects).toBeArrayOfSize(2);
-				var [configContent, parameterContent] = objects;
-				expect(configContent).toBeNonEmptyObject();
-				expect(configContent).toImplement(parameterContent);
-				expect(configContent).toEqual(jasmine.objectContaining(parameterContent));
-			}
-
-			function reject(error) {
-				expect(error).toBeUndefined();
-			}
+			expect(configContent).toBeNonEmptyObject();
+			expect(configContent).toImplement(parameterContent);
+			expect(configContent).toEqual(jasmine.objectContaining(parameterContent));
 
 		})
 
 	it(`should load the ${CONFIG_FILE_PATH} file without its dev dependencies`,
-		function(done) {
+		function() {
 			process.env[ENV.env] = 'prod';
-			Promise.all([
-				ConfigLoader.load(CONFIG_FILE_PATH),
-				ConfigLoader.load(DEV_PARAMETER_FILE_PATH),
-				ConfigLoader.load(PARAMETER_FILE_PATH)
-			])
-				.then(resolve)
-				.catch(reject)
-				.then(() => {
-					process.env[ENV.env] = '';
-					done();
-				});
 
-			function resolve(objects) {
-				expect(objects).toBeArrayOfSize(3);
+			var configContent = ConfigLoader.load(CONFIG_FILE_PATH),
+				devParameterContent = ConfigLoader.load(DEV_PARAMETER_FILE_PATH),
+				parameterContent = ConfigLoader.load(PARAMETER_FILE_PATH);
 
-				var [configContent, devParameterContent,parameterContent] = objects;
-				expect(configContent).toBeNonEmptyObject();
-				expect(configContent).toImplement(parameterContent);
+			expect(configContent).toBeNonEmptyObject();
+			expect(configContent).toImplement(parameterContent);
 
-				expect(configContent).not.toEqual(jasmine.objectContaining(devParameterContent));
-				expect(configContent).toEqual(jasmine.objectContaining(parameterContent));
-			}
+			expect(configContent).not.toEqual(jasmine.objectContaining(devParameterContent));
+			expect(configContent).toEqual(jasmine.objectContaining(parameterContent));
 
-			function reject(error) {
-				expect(error).toBeUndefined();
-			}
+			process.env[ENV.env] = '';
 
 		})
 
 	it(`should load the ${CONFIG_FILE_PATH} file with its dev dependencies`,
-		function(done) {
+		function() {
 			process.env[ENV.env] = 'dev';
-			Promise.all([
-				ConfigLoader.load(CONFIG_FILE_PATH),
-				ConfigLoader.load(DEV_PARAMETER_FILE_PATH),
-				ConfigLoader.load(PARAMETER_FILE_PATH)
-			])
-				.then(resolve)
-				.catch(reject)
-				.then(() => {
-					process.env[ENV.env] = '';
-					done();
-				});
+			var	configContent = ConfigLoader.load(CONFIG_FILE_PATH),
+				devParameterContent = ConfigLoader.load(DEV_PARAMETER_FILE_PATH),
+				parameterContent = ConfigLoader.load(PARAMETER_FILE_PATH);
 
-			function resolve(objects) {
-				expect(objects).toBeArrayOfSize(3);
+			expect(configContent).toBeNonEmptyObject();
+			expect(configContent).toImplement(parameterContent);
+			expect(configContent).toImplement(devParameterContent);
+			expect(configContent).toEqual(jasmine.objectContaining(devParameterContent));
 
-				var [configContent, devParameterContent,parameterContent] = objects;
-				expect(configContent).toBeNonEmptyObject();
-				expect(configContent).toImplement(parameterContent);
-				expect(configContent).toImplement(devParameterContent);
-
-				expect(configContent).toEqual(jasmine.objectContaining(devParameterContent));
-			}
-
-			function reject(error) {
-				expect(error).toBeUndefined();
-			}
+			process.env[ENV.env] = '';
 
 		})
 
 	it('should resolve environment variable',
-		function(done) {
+		function() {
 			process.env[ENV.password] = 'AwesomePassword';
 
-			ConfigLoader.load(PARAMETER_FILE_PATH)
-				.then(resolve)
-				.catch(reject)
-				.then(() => {
-					process.env[ENV.env] = '';
-					done();
-				});
+			var configContent = ConfigLoader.load(PARAMETER_FILE_PATH)
 
-			function resolve(object) {
-				expect(object).toBeNonEmptyObject();
-				expect(object).toHaveMember('credentials');
-				expect(object.credentials).toEqual(jasmine.objectContaining({password:process.env[ENV.password]}));
-			}
+			expect(configContent).toBeNonEmptyObject();
+			expect(configContent).toHaveMember('credentials');
+			expect(configContent.credentials).toEqual(jasmine.objectContaining({password:process.env[ENV.password]}));
 
-			function reject(error) {
-				expect(error).toBeUndefined();
-			}
+			process.env[ENV.env] = '';
 
 		})
 })
