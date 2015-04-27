@@ -1,0 +1,9 @@
+imports:
+  - { source: parameters.yml }
+  - { source: dev/parameters.yml, if: { TestEnv: dev }  }
+
+database:
+  name: mysql
+  address: localhost
+
+environement: '${npm_package_config_env}'
