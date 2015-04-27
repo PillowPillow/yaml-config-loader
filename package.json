@@ -1,6 +1,6 @@
 {
   "name": "@chikorita/config-loader",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "chikorita config loader part",
   "main": "core.js",
   "scripts": {
@@ -13,6 +13,7 @@
   "author": "Nicolas Gaignoux",
   "license": "MIT",
   "dependencies": {
+    "debug": "^2.1.3",
     "js-yaml": "^3.2.7"
   },
   "devDependencies": {

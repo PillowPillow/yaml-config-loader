@@ -1,7 +1,8 @@
 var utils = require(`${__dirname}/utils`),
 	env = require(`${__dirname}/environment`),
 	path = require('path'),
-	yaml = require('js-yaml');
+	yaml = require('js-yaml'),
+	debug = require('chikorita:config-loader:loader');
 
 class Loader {
 
@@ -10,6 +11,11 @@ class Loader {
 		var filePath = env.resolveValue(rawPath),
 			content = this.loadYaml(filePath) || {},
 			contents = [content];
+
+		if(Object.keys(content).length === 0)
+			debug(`file ${filePath} loaded but empty`);
+		else
+			debug(`file ${filePath} loaded`);
 
 		if(!!content.imports) {
 			let directory = path.dirname(filePath);

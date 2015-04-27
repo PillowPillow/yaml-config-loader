@@ -1,4 +1,5 @@
-var path = require('path');
+var path = require('path'),
+	debug = require('chikorita:config-loader:solver');
 
 const RG_PARAM = /\$\{([a-zA-Z0-0\_\-\.\$\@]+)\}/g;
 const APP_PATH = path.normalize(path.dirname(require.main.filename));
@@ -29,7 +30,7 @@ class Environment {
 				}
 
 				if(value === undefined)
-					value = process.env[variable] || variable;
+					value = process.env[variable];
 
 				resolved = value;
 		}
@@ -54,16 +55,24 @@ class Environment {
 
 		for(var value of values) {
 
-			let matched;
+			let matched,
+				varResolved = false;
 			while(matched = RG_PARAM.exec(value)) {
 				let [,envVar] = matched,
 					resolved = this.resolve(envVar);
 
-				if(value !== undefined)
+				if(value !== undefined) {
+					varResolved = true;
 					value = value.replace(`\${${envVar}}`, resolved);
+				}
 			}
 
+			if(varResolved)
+				debug(`variable [${value}] resolved`);
+
 		}
+
+
 
 		return value;
 	}
