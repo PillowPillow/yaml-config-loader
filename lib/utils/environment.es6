@@ -11,7 +11,7 @@ class Environment {
 
 		switch(variable) {
 			case '__appPath':
-				resolved = APP_PATH;
+				resolved = global.__appPath || APP_PATH;
 				break;
 			default:
 

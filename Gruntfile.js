@@ -19,7 +19,7 @@ function Grunt(grunt) {
 			files: [{
 				expand: true,
 				ext: '.js',
-				src: ['lib/**/*.js','specs/**/*.js']
+				src: ['lib/**/*.es6','specs/**/*.es6']
 			}]
 		}
 	};
