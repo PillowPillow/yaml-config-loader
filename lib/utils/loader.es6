@@ -2,7 +2,7 @@ var utils = require(`${__dirname}/utils`),
 	env = require(`${__dirname}/environment`),
 	path = require('path'),
 	yaml = require('js-yaml'),
-	debug = require('chikorita:config-loader:loader');
+	debug = debug('debug')('chikorita:config-loader:loader');
 
 class Loader {
 

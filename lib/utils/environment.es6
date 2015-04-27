@@ -1,5 +1,5 @@
 var path = require('path'),
-	debug = require('chikorita:config-loader:solver');
+	debug = debug('debug')('chikorita:config-loader:solver');
 
 const RG_PARAM = /\$\{([a-zA-Z0-0\_\-\.\$\@]+)\}/g;
 const APP_PATH = path.normalize(path.dirname(require.main.filename));
