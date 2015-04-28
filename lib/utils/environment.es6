@@ -53,28 +53,31 @@ class Environment {
 		if(!(values instanceof Array))
 			values = [values];
 
-		for(var value of values) {
+		for(var i = 0; i<values.length; i++) {
 
-			let matched,
-				varResolved = false;
+			let value = values[i],
+				matched,
+				varResolved = false,
+				buildedValue = value;
+
 			while(matched = RG_PARAM.exec(value)) {
 				let [,envVar] = matched,
 					resolved = this.resolve(envVar);
 
-				if(value !== undefined) {
+				if(resolved !== undefined) {
 					varResolved = true;
-					value = value.replace(`\${${envVar}}`, resolved);
+					buildedValue = buildedValue.replace(`\${${envVar}}`, resolved);
 				}
 			}
+
+			values[i] = buildedValue;
 
 			if(varResolved)
 				debug(`variable [${value}] resolved`);
 
 		}
 
-
-
-		return value;
+		return values.length > 1 ? values : values[0];
 	}
 
 	static test(conditions = {}) {
