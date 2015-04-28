@@ -1,6 +1,6 @@
 {
   "name": "@chikorita/config-loader",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "chikorita config loader part",
   "main": "core.js",
   "scripts": {
