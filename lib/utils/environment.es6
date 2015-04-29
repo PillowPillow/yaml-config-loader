@@ -6,7 +6,23 @@ const APP_PATH = path.normalize(path.dirname(require.main.filename));
 
 class Environment {
 
-	static resolve(variable = '') {
+	static resolveVariableFromSource(variable = '', source = global) {
+
+		var value = source,
+			parts = variable.split('.');
+
+		for(var i = 1; i<parts.length; i++)
+			if(value instanceof Object)
+				value = value[parts[i]];
+			else {
+				value = undefined;
+				break;
+			}
+
+		return value;
+	}
+
+	static resolve(variable = '', sourceFile = undefined) {
 		var resolved = variable;
 
 		switch(variable) {
@@ -16,18 +32,13 @@ class Environment {
 			default:
 
 				var value;
-				if(!!variable.match(/global\..*/)) {
-					var parts = variable.split('.');
 
-					value = global;
-					for(var i = 1; i<parts.length; i++)
-						if(value instanceof Object)
-							value = value[parts[i]];
-						else {
-							value = undefined;
-							break;
-						}
-				}
+				if(!!variable.match(/global\..*/))
+					value = this.resolveVariableFromSource(variable, global);
+
+				if(sourceFile instanceof Object
+				&& !!variable.match(/__local\..*/))
+					value = this.resolveVariableFromSource(variable, sourceFile);
 
 				if(value === undefined)
 					value = process.env[variable];
@@ -38,17 +49,17 @@ class Environment {
 		return resolved;
 	}
 
-	static resolveAll(node = {}) {
+	static resolveAll(node = {}, sourceFile = undefined) {
 		for(var prop in node)
 			if(node[prop] instanceof Object)
-				node[prop] = this.resolveAll(node[prop]);
+				node[prop] = this.resolveAll(node[prop], sourceFile);
 			else
-				node[prop] = this.resolveValue(node[prop]);
+				node[prop] = this.resolveValue(node[prop], sourceFile);
 
 		return node;
 	}
 
-	static resolveValue(values = []) {
+	static resolveValue(values = [], sourceFile = undefined) {
 
 		if(!(values instanceof Array))
 			values = [values];
@@ -62,7 +73,7 @@ class Environment {
 
 			while(matched = RG_PARAM.exec(value)) {
 				let [,envVar] = matched,
-					resolved = this.resolve(envVar);
+					resolved = this.resolve(envVar, sourceFile);
 
 				if(resolved !== undefined) {
 					varResolved = true;

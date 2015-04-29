@@ -29,6 +29,8 @@ describe('ConfigLoader', function() {
 			var configContent = ConfigLoader.load(CONFIG_FILE_PATH),
 				parameterContent = ConfigLoader.load(PARAMETER_FILE_PATH);
 
+			console.log(configContent);
+
 			expect(configContent).toBeNonEmptyObject();
 			expect(configContent).toImplement(parameterContent);
 			expect(configContent).toEqual(jasmine.objectContaining(parameterContent));

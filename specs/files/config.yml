@@ -7,3 +7,4 @@ database:
   address: localhost
 
 environement: '${npm_package_config_env}'
+paramUsername: '${__local.credentials.username}'

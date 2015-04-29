@@ -6,9 +6,10 @@ class configLoader {
 
 	static load(path) {
 		var contents = loader.load(path),
-			merged = utils.extends({}, contents, true);
+			merged = utils.extends({}, contents, true),
+			resolved = env.resolveAll(merged);
 
-		return env.resolveAll(merged)
+		return env.resolveAll(resolved, resolved);
 	}
 }
 
