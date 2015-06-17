@@ -1,9 +1,14 @@
+/*Services requiring*/
+
 var fs = require('fs');
 
-class Utils {
+export default class Utils {
 
 	static fileExists(filePath) {
-		return fs.existsSync(filePath);
+		let witness = true;
+		try{fs.statSync(filePath);}
+		catch(error) {witness = false;}
+		return witness;
 	}
 
 	static loadFile(filePath) {
@@ -26,7 +31,7 @@ class Utils {
 		return value instanceof RegExp;
 	}
 
-	static extends(destination = {}, sources = [], deep = false) {
+	static extend(destination = {}, sources = [], deep = false) {
 
 		for(let source of sources) {
 
@@ -42,7 +47,7 @@ class Utils {
 				if(deep && this.isObject(value) && !this.isRegExp(value)) {
 					if(!this.isObject(destination[key]))
 						destination[key] = this.isArray(value) ? [] : {};
-					this.extends(destination[key], [value], true);
+					this.extend(destination[key], [value], true);
 				}
 				else
 					destination[key] = value;
@@ -52,5 +57,3 @@ class Utils {
 		return destination;
 	}
 }
-
-module.exports = Utils;
