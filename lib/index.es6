@@ -4,31 +4,43 @@ var {FileLoader, Solver} = require(`${__dirname}/loader`);
 
 /*Utils requiring*/
 
-var {storage} = require(`${__dirname}/../utils`);
+var {storage, utils} = require(`${__dirname}/utils`);
 
 /*Class definition*/
 
 class Loader {
 
 	static get(name) {
-		return registry.get(name);
+		return storage.get(name);
 	}
 
 	static load(...params) {
-		let storage = params.length >= 2,
-			path, name, content;
+		let saveContent = params.length >= 2,
+			path, name, contents, content;
 
-		if(storage) [name, path] = params;
+		if(saveContent) [name, path] = params;
 		else [path] = params;
-		content = Loader.load(path);
 
-		registry.set(this.name, content);
+		contents = FileLoader.load(path);
+
+		content = utils.extend({}, contents, true);
+
+		let parts = Solver.extractDynamicParts(content);
+		Solver.resolve(parts, content);
+
+		if(saveContent)
+			storage.set(name, content);
 
 		return content;
 	}
 
 	static define(name, value) {
 		Solver.defineConstant(name, value);
+	}
+
+	static clear() {
+		Solver.clearConstants();
+		storage.clear();
 	}
 
 }
