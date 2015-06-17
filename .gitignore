@@ -1,0 +1,4 @@
+*.iml
+/lib/**/*.js
+/specs/**/*.js
+/node_modules
