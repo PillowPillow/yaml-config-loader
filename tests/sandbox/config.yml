@@ -1,0 +1,15 @@
+imports:
+    - {
+        source: 'dev/config.yml',
+        if: { var_name: 'dev' }
+    }
+
+foo:
+    bar: 3
+    foobar: '${local:foo.bar}'
+
+barfoo:
+    foo:
+        bar: '${config:name:bar.foo}'
+        fooo: '${const:foobarbar}'
+        barbar: '${const:APP_PATH}'
