@@ -3,7 +3,8 @@ var chai = require('chai'),
 	{expect} = chai;
 
 describe('Solver', function() {
-	var {Solver} = require(`${LIB_PATH}/lib/loader`);
+	var {Solver} = require(`${LIB_PATH}/lib/loader`),
+		{storage} = require(`${LIB_PATH}/lib/utils`);
 
 	it('should define and return a constant', function() {
 		Solver.defineConstant('foo', 1);
@@ -62,7 +63,7 @@ describe('Solver', function() {
 				'bar': 3
 			}
 		},
-		value = Solver.getValueFromSource('foo.bar', source);
+		value = Solver._getValueFromSource('foo.bar', source);
 		expect(value).to.equal(3);
 	})
 
@@ -94,6 +95,24 @@ describe('Solver', function() {
 			'bar': 3,
 			'barfoo': {'foo': {'bar': 3}}
 		})
+	})
+
+	it('should resolve const part', function() {
+		Solver.defineConstant('FOO','foo')
+		var model = {'bar': '${const:FOO}'},
+			parts = Solver.extractDynamicParts(model);
+		Solver.resolve(parts, model);
+
+		expect(model).to.deep.equal({'bar': 'foo'})
+	})
+
+	it('should resolve config part', function() {
+		storage.set('FooBar', {'foo': 3});
+		var model = {'bar': '${config:FooBar:foo}'},
+			parts = Solver.extractDynamicParts(model);
+		Solver.resolve(parts, model);
+
+		expect(model).to.deep.equal({'bar': 3})
 	})
 
 	it('should avoid circular dependencies', function() {
