@@ -16,9 +16,7 @@ export default new class Storage {
 
 	set(type, content) {
 		let KEY = sregistry(type);
-		if(this._storage[KEY] === undefined)
-			this._storage[KEY] = [];
-		this._storage[KEY].push(content);
+		this._storage[KEY] = content;
 	}
 
 	get(type) {
