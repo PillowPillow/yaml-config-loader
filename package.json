@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.pillowrc.com:10022/pillowteam/Chikorita.config-loader.git"
+    "url": "git@github.com:PillowPillow/yaml-config-loader.git"
   },
   "author": "Nicolas Gaignoux",
   "license": "MIT"
