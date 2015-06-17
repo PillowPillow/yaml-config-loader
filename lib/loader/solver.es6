@@ -1,3 +1,7 @@
+/*UTils requiring*/
+
+var {storage} = require(`${__dirname}/../utils`);
+
 var constants = {
 	'APP_PATH': __dirname
 };
@@ -24,35 +28,36 @@ export default class Solver {
 
 	static _resolveLocalParts(parts = {}, source = {}) {
 		var nbSolved = 0,
+			isThereSomethingToResolve = false,
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
 			let value = this.getValueFromSource(name, source);
-			if(!parts[name].solved && !String(value).match(VAR_REGEXP))
-				for(let occurence of parts[name]) {
-					occurence.node[occurence['property']] = value;
-					parts[name].solved = true;
-					nbSolved++;
+			if(!parts[name].solved) {
+				isThereSomethingToResolve = true;
+				if(!String(value).match(VAR_REGEXP)) {
+					for(let occurence of parts[name]) {
+						occurence.node[occurence['property']] = value;
+						parts[name].solved = true;
+						nbSolved++;
+					}
 				}
+			}
 		}
-		return nbSolved;
+		return {nbSolved, isThereSomethingToResolve};
 	}
 
 	static resolve(parts = {}, source = {}) {
 
-		var nbSolved = 0,
-			turnWithZeroResolve = 0;
-
 		for(let type of ['const','config','env','local'])
 		if(type in parts && parts[type] instanceof Object) {
-			nbSolved = 0;
-			turnWithZeroResolve = 0;
+			let turnWithZeroResolve = 0;
 			while(turnWithZeroResolve < 2) {
 
 				switch(type) {
 					case 'const':break;
 					case 'local':
-						nbSolved = this._resolveLocalParts(parts[type], source);
+						let {nbSolved, isThereSomethingToResolve} = this._resolveLocalParts(parts[type], source);
 						break;
 					case 'config':break;
 					case 'env':break;
@@ -60,10 +65,14 @@ export default class Solver {
 
 				if(nbSolved <= 0)
 					turnWithZeroResolve++;
+				if(turnWithZeroResolve >= 2 && isThereSomethingToResolve === true)
+					throw Error('unable to load the given config, possible circular dependencies');
 
 				nbSolved = 0;
 			}
+
 		}
+
 	}
 
 	static extractDynamicParts(node = {}, parts = {}) {
