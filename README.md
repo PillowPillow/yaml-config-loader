@@ -65,7 +65,7 @@ foo:
 ````
 
 ###`${local:LOCAL_VARIABLE}`
-> retrieves the value of a property in the current configuration
+> retrieves the value of a property from the current configuration
 
 #### Usage
 **file.yaml**
