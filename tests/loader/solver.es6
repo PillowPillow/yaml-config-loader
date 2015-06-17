@@ -115,6 +115,15 @@ describe('Solver', function() {
 		expect(model).to.deep.equal({'bar': 3})
 	})
 
+	it('should resolve env part', function() {
+		process.env.foobar = 1;
+		var model = {'bar': '${env:foobar}'},
+			parts = Solver.extractDynamicParts(model);
+		Solver.resolve(parts, model);
+
+		expect(model).to.deep.equal({'bar': '1'})
+	})
+
 	it('should avoid circular dependencies', function() {
 		var model = {
 				'foo': '${local:bar}',
@@ -128,6 +137,11 @@ describe('Solver', function() {
 			},
 			parts = Solver.extractDynamicParts(model);
 		expect(() => Solver.resolve(parts, model)).to.throw(Error);
+	})
+
+	after(function() {
+		Solver.clearConstants();
+		storage.clear();
 	})
 
 });
