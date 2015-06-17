@@ -9,7 +9,7 @@ export default new class Storage {
 	constructor() {
 		Object.defineProperty(this, '_storage', {
 			value: {},
-			writable: false,
+			writable: true,
 			enumerable: false
 		});
 	}
@@ -22,6 +22,11 @@ export default new class Storage {
 	get(type) {
 		let KEY = sregistry(type);
 		return this._storage[KEY];
+	}
+
+	clear() {
+		sregistry.erase();
+		this._storage = {};
 	}
 
 }
