@@ -57,7 +57,7 @@ foo:
 **loaded configuration (json)**
 ````json
 {
-	"foobar": "foo/bar/app.js"
+	"foobar": "foo/bar/app.js",
 	"foo": {
 		"bar": "foobar_value"
 	}
@@ -78,7 +78,7 @@ foo:
 ````json
 {
 	"foo": {
-		"foobar": ": "foobar_value"
+		"foobar": ": "foobar_value",
 		"bar": "foobar_value"
 	}
 }
