@@ -96,4 +96,19 @@ describe('Solver', function() {
 		})
 	})
 
+	it('should avoid circular dependencies', function() {
+		var model = {
+				'foo': '${local:bar}',
+				'foobar': '${local:barfoo.foo.bar}',
+				'bar': '${local:foo}',
+				'barfoo': {
+					'foo': {
+						'bar': '${local:bar}'
+					}
+				}
+			},
+			parts = Solver.extractDynamicParts(model);
+		expect(() => Solver.resolve(parts, model)).to.throw(Error);
+	})
+
 });
