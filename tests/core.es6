@@ -13,9 +13,9 @@ describe('Core', function() {
 			'foo': {'bar': 3, 'foobar': 3},
 			'barfoo': {
 				'foo': {
-					'bar': undefined,
-					'fooo': undefined,
-					'barbar': undefined
+					'bar': '',
+					'fooo': '',
+					'barbar': ''
 				}
 			}
 		})
@@ -28,8 +28,8 @@ describe('Core', function() {
 			'foo': {'bar': 3, 'foobar': 3},
 			'barfoo': {
 				'foo': {
-					'bar': undefined,
-					'fooo': undefined,
+					'bar': '',
+					'fooo': '',
 					'barbar': 'foo'
 				}
 			}
@@ -44,7 +44,7 @@ describe('Core', function() {
 			'barfoo': {
 				'foo': {
 					'bar': 6,
-					'fooo': undefined,
+					'fooo': '',
 					'barbar': 'foo'
 				}
 			}

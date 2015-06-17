@@ -96,48 +96,48 @@ describe('Solver', function() {
 			'barfoo': {'foo': {'bar': 3}}
 		})
 	})
-
-	it('should resolve const part', function() {
-		Solver.defineConstant('FOO','foo')
-		var model = {'bar': '${const:FOO}'},
-			parts = Solver.extractDynamicParts(model);
-		Solver.resolve(parts, model);
-
-		expect(model).to.deep.equal({'bar': 'foo'})
-	})
-
-	it('should resolve config part', function() {
-		storage.set('FooBar', {'foo': 3});
-		var model = {'bar': '${config:FooBar:foo}'},
-			parts = Solver.extractDynamicParts(model);
-		Solver.resolve(parts, model);
-
-		expect(model).to.deep.equal({'bar': 3})
-	})
-
-	it('should resolve env part', function() {
-		process.env.foobar = 1;
-		var model = {'bar': '${env:foobar}'},
-			parts = Solver.extractDynamicParts(model);
-		Solver.resolve(parts, model);
-
-		expect(model).to.deep.equal({'bar': '1'})
-	})
-
-	it('should avoid circular dependencies', function() {
-		var model = {
-				'foo': '${local:bar}',
-				'foobar': '${local:barfoo.foo.bar}',
-				'bar': '${local:foo}',
-				'barfoo': {
-					'foo': {
-						'bar': '${local:bar}'
-					}
-				}
-			},
-			parts = Solver.extractDynamicParts(model);
-		expect(() => Solver.resolve(parts, model)).to.throw(Error);
-	})
+	//
+	//it('should resolve const part', function() {
+	//	Solver.defineConstant('FOO','foo')
+	//	var model = {'bar': '${const:FOO}'},
+	//		parts = Solver.extractDynamicParts(model);
+	//	Solver.resolve(parts, model);
+	//
+	//	expect(model).to.deep.equal({'bar': 'foo'})
+	//})
+	//
+	//it('should resolve config part', function() {
+	//	storage.set('FooBar', {'foo': 3});
+	//	var model = {'bar': '${config:FooBar:foo}'},
+	//		parts = Solver.extractDynamicParts(model);
+	//	Solver.resolve(parts, model);
+	//
+	//	expect(model).to.deep.equal({'bar': 3})
+	//})
+	//
+	//it('should resolve env part', function() {
+	//	process.env.foobar = 1;
+	//	var model = {'bar': '${env:foobar}'},
+	//		parts = Solver.extractDynamicParts(model);
+	//	Solver.resolve(parts, model);
+	//
+	//	expect(model).to.deep.equal({'bar': '1'})
+	//})
+	//
+	//it('should avoid circular dependencies', function() {
+	//	var model = {
+	//			'foo': '${local:bar}',
+	//			'foobar': '${local:barfoo.foo.bar}',
+	//			'bar': '${local:foo}',
+	//			'barfoo': {
+	//				'foo': {
+	//					'bar': '${local:bar}'
+	//				}
+	//			}
+	//		},
+	//		parts = Solver.extractDynamicParts(model);
+	//	expect(() => Solver.resolve(parts, model)).to.throw(Error);
+	//})
 
 	after(function() {
 		Solver.clearConstants();
