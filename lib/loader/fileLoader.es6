@@ -2,12 +2,28 @@
 
 var yaml = require('js-yaml'),
 	path = require('path'),
-	{utils} = require(`${__dirname}/../utils`);
+	{utils} = require(`${__dirname}/../utils`),
+	Solver = require(`${__dirname}/solver`);
 
 export default class FileLoader {
 
-	static load(path) {
+	static load(filepath) {
+		var content = this.loadYaml(filepath) || {},
+			contents = [content];
 
+		if(content.imports !== undefined) {
+			let directory = path.dirname(filepath),
+				parts = Solver.extractDynamicParts(content.imports);
+			Solver.resolve(parts, content.imports);
+
+			for(let imp of content.imports)
+				if(!imp.if || Solver.execCondition(imp.if))
+					contents = contents.concat(this.load(path.join(directory, imp.source)));
+
+			delete content.imports;
+		}
+
+		return contents;
 	}
 
 	static loadYaml(filePath) {
