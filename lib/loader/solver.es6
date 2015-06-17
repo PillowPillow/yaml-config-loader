@@ -37,11 +37,14 @@ export default class Solver {
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let value = process.env[name] || undefined;
+			let value = process.env[name] || '',
+				type = typeof value;
+
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				for(let occurrence of parts[name]) {
-					occurrence.node[occurrence['property']] = value;
+					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 					parts[name].solved = true;
 					nbSolved++;
 				}
@@ -58,11 +61,14 @@ export default class Solver {
 		for(let name of partsName) {
 			let {label, part} = parts[name][0];
 			let config = storage.get(label);
-			let value = this._getValueFromSource(part, config) || undefined;
+			let value = this._getValueFromSource(part, config) || '',
+				type = typeof value;
+
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				for(let occurrence of parts[name]) {
-					occurrence.node[occurrence['property']] = value;
+					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 					parts[name].solved = true;
 					nbSolved++;
 				}
@@ -77,11 +83,14 @@ export default class Solver {
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let value = constants[name] || undefined;
+			let value = constants[name] || '',
+				type = typeof value;
+
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				for(let occurrence of parts[name]) {
-					occurrence.node[occurrence['property']] = value;
+					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 					parts[name].solved = true;
 					nbSolved++;
 				}
@@ -96,12 +105,15 @@ export default class Solver {
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let value = this._getValueFromSource(name, source) || undefined;
+			let value = this._getValueFromSource(name, source) || '',
+				type = typeof value;
+
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				if(!String(value).match(LOCAL_VAR_REGEXP)) {
 					for(let occurrence of parts[name]) {
-						occurrence.node[occurrence['property']] = value;
+						let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+						occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 						parts[name].solved = true;
 						nbSolved++;
 					}
@@ -189,7 +201,7 @@ export default class Solver {
 	static execCondition(conditions = {}) {
 		var result = true;
 		for(var key in conditions) {
-			let keyValue = process.env[key] || undefined;
+			let keyValue = process.env[key] || '';
 			if(keyValue === undefined
 			|| (conditions[key] instanceof Array && !~conditions[key].indexOf(keyValue))
 			|| (!(conditions[key] instanceof Array) && keyValue !== conditions[key])) {
