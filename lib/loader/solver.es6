@@ -15,6 +15,21 @@ const LOCAL_VAR_REGEXP = /\$\{((local)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]
 
 export default class Solver {
 
+	static _formatImport(imports = {}) {
+		imports.forEach((imp) => {
+			if('if' in imp) {
+				imp['parsedIf'] = [];
+				let keys = Object.keys(imp.if);
+				for(let key of keys) {
+					imp['parsedIf'].push({
+						'key': key,
+						'value': imp.if[key]
+					});
+				}
+			}
+		})
+	}
+
 	static _getValueFromSource(variable = '', source = {}) {
 
 		var value = source,
@@ -146,15 +161,12 @@ export default class Solver {
 
 	static execCondition(conditions = {}) {
 		var result = true;
-		for(var key in conditions) {
-			let keyValue = process.env[key] || '';
-			if(keyValue === undefined
-			|| (conditions[key] instanceof Array && !~conditions[key].indexOf(keyValue))
-			|| (!(conditions[key] instanceof Array) && keyValue !== conditions[key])) {
+		for(var condition of conditions)
+			if((!(condition['value'] instanceof Array) && condition['key'] !== condition['value'])
+			|| (!!(condition['value'] instanceof Array) && !~condition['value'].indexOf(condition['key']))){
 				result = false;
 				break;
 			}
-		}
 		return result;
 	}
 
