@@ -5,10 +5,10 @@ Yaml config loader for node js
 ### Installation
 ------------
 
-`npm install yaml-config-loader`  
+`npm install yaml-configuration-loader`  
 
 ````javascript
-var loader = require('yaml-config-loader');
+var loader = require('yaml-configuration-loader');
 ````
 
 ### Yaml Api Reference
@@ -45,7 +45,7 @@ foo:
 
 #### Usage:
 ````javascript
-var loader = require('yaml-config-loader');
+var loader = require('yaml-configuration-loader');
 loader.define('foobar','foobar_value');
 ````
 **file.yaml**
@@ -89,7 +89,7 @@ foo:
 
 #### Usage:
 ````javascript
-var loader = require('yaml-config-loader');
+var loader = require('yaml-configuration-loader');
 loader.load('foobar_conf', 'xxx/xxx.yaml')
 ````
 **xxx.yaml**

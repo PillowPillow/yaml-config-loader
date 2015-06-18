@@ -1,6 +1,6 @@
 {
-  "name": "yaml-config-loader",
-  "version": "0.1.0",
+  "name": "yaml-configuration-loader",
+  "version": "0.1.1",
   "description": "yaml configs loader",
   "main": "index.js",
   "dependencies": {
@@ -19,6 +19,13 @@
     "mocha": "^2.2.5",
     "time-grunt": "^1.2.1"
   },
+  "keywords": [
+    "NodeJS",
+    "Yaml",
+    "Configuration",
+    "Loader",
+    "JSON"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
