@@ -1,5 +1,5 @@
 imports:
-    - { source: 'dev/config.yml', if: { envname: 'dev' } }
+    - { source: 'dev/config.yml', if: { '${env:envname}': 'dev' } }
 
 port: '${env:server_port|12}'
 address: '${env:server_address|"0.0.0.0"}'
