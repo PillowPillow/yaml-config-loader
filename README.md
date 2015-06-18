@@ -84,7 +84,7 @@ foo:
 }
 ````
 
-###`${config:CONFIGURATION_VARIABLE}`
+###`${config:CONFIGURATION_NAME:CONFIGURATION_VARIABLE}`
 > retrieves the value of a defined configuration  
 
 #### Usage:
@@ -100,13 +100,13 @@ foo:
 **file.yaml**
 ````yaml
 foo:
-	bar: '${config:foo.bar}'
+	bar: '${config:foobar_conf:foo.bar}'
 ````
 **loaded configuration (json)**
 ````json
 {
 	"foo": {
-		"bar": 'bar'
+		"bar": "bar"
 	}
 }
 ````
