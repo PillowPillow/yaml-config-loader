@@ -10,7 +10,7 @@ var constants = {
 	'APP_PATH': path.normalize(path.dirname(require.main.filename))
 };
 
-const VAR_REGEXP = /\$\{((const|local|config|env)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]+)))\}/g;
+const VAR_REGEXP = /\$\{((const|local|config|env)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]+)(?:\|([\'\"\w\_\-\.\$\@]+))?))\}/g;
 const LOCAL_VAR_REGEXP = /\$\{((local)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]+)))\}/g;
 
 export default class Solver {
@@ -37,13 +37,14 @@ export default class Solver {
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let value = process.env[name] || '',
+			let value = process.env[name],
 				type = typeof value;
 
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				for(let occurrence of parts[name]) {
-					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+					if(!value) type = typeof occurrence['defaultval'];
+					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
 					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 					parts[name].solved = true;
 					nbSolved++;
@@ -61,13 +62,14 @@ export default class Solver {
 		for(let name of partsName) {
 			let {label, part} = parts[name][0];
 			let config = storage.get(label);
-			let value = this._getValueFromSource(part, config) || '',
+			let value = this._getValueFromSource(part, config),
 				type = typeof value;
 
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				for(let occurrence of parts[name]) {
-					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+					if(!value) type = typeof occurrence['defaultval'];
+					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
 					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 					parts[name].solved = true;
 					nbSolved++;
@@ -83,13 +85,14 @@ export default class Solver {
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let value = constants[name] || '',
+			let value = constants[name],
 				type = typeof value;
 
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				for(let occurrence of parts[name]) {
-					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+					if(!value) type = typeof occurrence['defaultval'];
+					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
 					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 					parts[name].solved = true;
 					nbSolved++;
@@ -105,14 +108,15 @@ export default class Solver {
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let value = this._getValueFromSource(name, source) || '',
+			let value = this._getValueFromSource(name, source),
 				type = typeof value;
 
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
 				if(!String(value).match(LOCAL_VAR_REGEXP)) {
 					for(let occurrence of parts[name]) {
-						let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value);
+						if(!value) type = typeof occurrence['defaultval'];
+						let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
 						occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
 						parts[name].solved = true;
 						nbSolved++;
@@ -154,7 +158,6 @@ export default class Solver {
 			}
 
 		}
-
 	}
 
 	static extractDynamicParts(node = {}, parts = {}) {
@@ -165,8 +168,15 @@ export default class Solver {
 				else {
 					let matched;
 					while(matched = VAR_REGEXP.exec(node[property])) {
-						let [,fullname,namespace, label, part] = matched;
+						let [,fullname,namespace, label, part, defaultval] = matched;
 						let key = label !== undefined ? `${label}:${part}` : part;
+						defaultval = defaultval || '';
+						if(defaultval !== '') {
+							if(!!defaultval.match(/(['"])(.*)(\1)/))
+								defaultval = defaultval.replace(/(['"])(.*)(\1)/g, '$2');
+							else if(!isNaN(defaultval))
+								defaultval = Number(defaultval);
+						}
 
 						if(parts[namespace] === undefined)
 							parts[namespace] = {};
@@ -174,7 +184,7 @@ export default class Solver {
 						if(parts[namespace][key] === undefined)
 							parts[namespace][key] = [];
 
-						parts[namespace][key].push({node,property,fullname,namespace,label,part});
+						parts[namespace][key].push({node,property,fullname,namespace,label,part,defaultval});
 					}
 				}
 			}
@@ -211,5 +221,7 @@ export default class Solver {
 		}
 		return result;
 	}
+
+
 
 }
