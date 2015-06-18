@@ -10,6 +10,8 @@ describe('Core', function() {
 	it('should load the yaml file', function() {
 		var config = Loader.load(`${SANDBOX_PATH}/config.yml`);
 		expect(config).to.deep.equal({
+			'address': '0.0.0.0',
+			'port': 12,
 			'foo': {'bar': 3, 'foobar': 3},
 			'barfoo': {
 				'foo': {
@@ -25,6 +27,8 @@ describe('Core', function() {
 		Loader.define('foobarconst','foo')
 		var config = Loader.load(`${SANDBOX_PATH}/config.yml`);
 		expect(config).to.deep.equal({
+			'address': '0.0.0.0',
+			'port': 12,
 			'foo': {'bar': 3, 'foobar': 3},
 			'barfoo': {
 				'foo': {
@@ -40,6 +44,8 @@ describe('Core', function() {
 		storage.set('name', {'bar':{'foo': 6}});
 		var config = Loader.load(`${SANDBOX_PATH}/config.yml`);
 		expect(config).to.deep.equal({
+			'address': '0.0.0.0',
+			'port': 12,
 			'foo': {'bar': 3, 'foobar': 3},
 			'barfoo': {
 				'foo': {
@@ -53,8 +59,11 @@ describe('Core', function() {
 
 	it('should load the yaml file and resolve the env variables', function() {
 		process.env.envname = 'foobar';
+		process.env.server_port = '1024';
 		var config = Loader.load(`${SANDBOX_PATH}/config.yml`);
 		expect(config).to.deep.equal({
+			'address': '0.0.0.0',
+			'port': '1024',
 			'foo': {'bar': 3, 'foobar': 3},
 			'barfoo': {
 				'foo': {
@@ -70,6 +79,8 @@ describe('Core', function() {
 		process.env.envname = 'dev';
 		var config = Loader.load(`${SANDBOX_PATH}/config.yml`);
 		expect(config).to.deep.equal({
+			'address': '0.0.0.0',
+			'port': '1024',
 			'foo': {'bar': 5, 'foobar': 5},
 			'barfoo': {
 				'foo': {
@@ -85,7 +96,10 @@ describe('Core', function() {
 		process.env.envname = 'dev';
 		Loader.load('configuration', `${SANDBOX_PATH}/config.yml`);
 		var config = Loader.get('configuration');
+
 		expect(config).to.deep.equal({
+			'address': '0.0.0.0',
+			'port': '1024',
 			'foo': {'bar': 5, 'foobar': 5},
 			'barfoo': {
 				'foo': {
@@ -98,6 +112,7 @@ describe('Core', function() {
 	})
 
 	after(function() {
+		delete process.env.server_port;
 		delete process.env.envname;
 		Loader.clear();
 	})
