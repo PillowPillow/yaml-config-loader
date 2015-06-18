@@ -1,6 +1,9 @@
 imports:
     - { source: 'dev/config.yml', if: { envname: 'dev' } }
 
+port: '${env:server_port|12}'
+address: '${env:server_address|"0.0.0.0"}'
+
 foo:
     bar: 3
     foobar: '${local:foo.bar}'
