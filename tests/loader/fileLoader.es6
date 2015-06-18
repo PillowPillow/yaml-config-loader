@@ -12,7 +12,7 @@ describe('FileLoader', function() {
 			expectedContent = {
 				'port': '${env:server_port|12}',
 				'address': '${env:server_address|"0.0.0.0"}',
-				'imports': [{'source': 'dev/config.yml', 'if': { 'envname': 'dev' }}],
+				'imports': [{'source': 'dev/config.yml', 'if': { '${env:envname}': 'dev' }}],
 				'foo': {'bar': 3, 'foobar': '${local:foo.bar}'},
 				'barfoo': {
 					'foo': {
