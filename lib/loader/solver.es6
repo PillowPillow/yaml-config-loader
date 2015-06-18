@@ -31,89 +31,39 @@ export default class Solver {
 		return value;
 	}
 
-	static _resolveEnvParts(parts = {}) {
-		var nbSolved = 0,
-			isThereSomethingToResolve = false,
-			partsName = Object.keys(parts || {});
-
-		for(let name of partsName) {
-			let value = process.env[name],
-				type = typeof value;
-
-			if(!parts[name].solved) {
-				isThereSomethingToResolve = true;
-				for(let occurrence of parts[name]) {
-					if(!value) type = typeof occurrence['defaultval'];
-					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
-					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
-					parts[name].solved = true;
-					nbSolved++;
-				}
-			}
-		}
-		return {nbSolved, isThereSomethingToResolve};
+	static _getConstValue(name) {
+		return constants[name];
+	}
+	static _getLocalValue(name, source) {
+		return this._getValueFromSource(name, source)
+	}
+	static _getConfigValue(name, parts) {
+		let {label, part} = parts[name][0];
+		let config = storage.get(label);
+		return this._getValueFromSource(part, config);
+	}
+	static _getEnvValue(name) {
+		return process.env[name];
 	}
 
-	static _resolveConfigParts(parts = {}) {
+	static _resolveParts(partType, parts, ...params) {
 		var nbSolved = 0,
 			isThereSomethingToResolve = false,
 			partsName = Object.keys(parts || {});
 
 		for(let name of partsName) {
-			let {label, part} = parts[name][0];
-			let config = storage.get(label);
-			let value = this._getValueFromSource(part, config),
-				type = typeof value;
-
-			if(!parts[name].solved) {
-				isThereSomethingToResolve = true;
-				for(let occurrence of parts[name]) {
-					if(!value) type = typeof occurrence['defaultval'];
-					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
-					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
-					parts[name].solved = true;
-					nbSolved++;
-				}
+			let value;
+			switch(partType) {
+				case 'const': value = this._getConstValue(name); break;
+				case 'local': value = this._getLocalValue(name, ...params); break;
+				case 'config': value = this._getConfigValue(name, parts); break;
+				case 'env': value = this._getEnvValue(name); break;
 			}
-		}
-		return {nbSolved, isThereSomethingToResolve};
-	}
-
-	static _resolveConstantParts(parts = {}) {
-		var nbSolved = 0,
-			isThereSomethingToResolve = false,
-			partsName = Object.keys(parts || {});
-
-		for(let name of partsName) {
-			let value = constants[name],
-				type = typeof value;
+			let type = typeof value;
 
 			if(!parts[name].solved) {
 				isThereSomethingToResolve = true;
-				for(let occurrence of parts[name]) {
-					if(!value) type = typeof occurrence['defaultval'];
-					let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
-					occurrence.node[occurrence['property']] = type == 'number' ? Number(newVal) : newVal;
-					parts[name].solved = true;
-					nbSolved++;
-				}
-			}
-		}
-		return {nbSolved, isThereSomethingToResolve};
-	}
-
-	static _resolveLocalParts(parts = {}, source = {}) {
-		var nbSolved = 0,
-			isThereSomethingToResolve = false,
-			partsName = Object.keys(parts || {});
-
-		for(let name of partsName) {
-			let value = this._getValueFromSource(name, source),
-				type = typeof value;
-
-			if(!parts[name].solved) {
-				isThereSomethingToResolve = true;
-				if(!String(value).match(LOCAL_VAR_REGEXP)) {
+				if(partType !== 'local' ||  !String(value).match(LOCAL_VAR_REGEXP)) {
 					for(let occurrence of parts[name]) {
 						if(!value) type = typeof occurrence['defaultval'];
 						let newVal =  occurrence.node[occurrence['property']].replace(`\${${occurrence['fullname']}}`, value || occurrence['defaultval']);
@@ -133,21 +83,7 @@ export default class Solver {
 		if(type in parts && parts[type] instanceof Object) {
 			let turnWithZeroResolve = 0;
 			while(turnWithZeroResolve < 2) {
-				let resume = {};
-				switch(type) {
-					case 'const':
-						resume = this._resolveConstantParts(parts[type]);
-						break;
-					case 'local':
-						resume = this._resolveLocalParts(parts[type], source);
-						break;
-					case 'config':
-						resume = this._resolveConfigParts(parts[type]);
-						break;
-					case 'env':
-						resume = this._resolveEnvParts(parts[type]);
-						break;
-				}
+				let resume = this._resolveParts(type, parts[type], source);
 				let {nbSolved, isThereSomethingToResolve} = resume;
 				if(nbSolved <= 0)
 					turnWithZeroResolve++;
