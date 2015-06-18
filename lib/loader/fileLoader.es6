@@ -12,12 +12,14 @@ export default class FileLoader {
 			contents = [content];
 
 		if(content.imports !== undefined) {
-			let directory = path.dirname(filepath),
-				parts = Solver.extractDynamicParts(content.imports);
+
+			let directory = path.dirname(filepath);
+			Solver._formatImport(content.imports);
+			let parts = Solver.extractDynamicParts(content.imports);
 			Solver.resolve(parts, content.imports);
 
 			for(let imp of content.imports)
-				if(!imp.if || Solver.execCondition(imp.if))
+				if(!imp.parsedIf || Solver.execCondition(imp.parsedIf))
 					contents = contents.concat(this.load(path.join(directory, imp.source)));
 
 			delete content.imports;
