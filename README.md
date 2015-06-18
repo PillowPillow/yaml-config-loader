@@ -1,5 +1,5 @@
-# YAML config loader
-Yaml config loader for node js
+# YAML configuration loader
+Yaml configuration loader for node js
 =======================
 
 ### Installation
