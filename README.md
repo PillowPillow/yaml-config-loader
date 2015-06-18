@@ -78,7 +78,7 @@ foo:
 ````json
 {
 	"foo": {
-		"foobar": ": "foobar_value",
+		"foobar": "foobar_value",
 		"bar": "foobar_value"
 	}
 }
