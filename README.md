@@ -183,3 +183,7 @@ It will create js files from the es6 sources.
 
 Unit tests: `grunt unit`
 
+###Credits
+-------------------
+
+This library is based on the awesome [js-yaml](https://github.com/nodeca/js-yaml) parser.
