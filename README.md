@@ -179,18 +179,19 @@ barfoobar: '${config:foobar|"1024"}'
 > You simply need to add an *import* statement and add some files to import  
 > each files are described by two properties  
 > - source: String. file path
-> - if: *(Optional)* Object. conditions **{ environement_variable : 'value to check' }**  
+> - if: *(Optional)* Object. conditions **{ 'field (dynamic of not)' : 'value to check' }**  
+> you can use all syntaxes above presented except the **${local:...}**
 
 
 ````yaml
 imports:
-    - { source: 'dev/config.yml', if: { envname: 'dev' } }
+    - { source: 'dev/config.yml', if: { '${env:envname}': 'dev' } }
 ````
 
 #### Usage:
 ````yaml
 imports:
-    - { source: 'dev/config.yml', if: { envname: 'dev' } }
+    - { source: 'dev/config.yml', if: { '${env:envname}': 'dev' } }
 
 foo: 'bar'
 ````
