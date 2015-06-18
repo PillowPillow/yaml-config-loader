@@ -23,6 +23,7 @@ describe('Solver', function() {
 				'test': [{
 					'node': model.foo,
 					'property': 'foo',
+					'defaultval': '',
 					'fullname': 'local:test',
 					'namespace': 'local',
 					'label': undefined,
@@ -42,16 +43,16 @@ describe('Solver', function() {
 		expect(parts).to.deep.equal({
 			'local':  {
 				'test': [
-					{'node': model.foo, 'property': 'foo', 'namespace': 'local', 'fullname': 'local:test', 'label': undefined, 'part': 'test'},
-					{'node': model.foo, 'property': 'foo', 'namespace': 'local', 'fullname': 'local:test', 'label': undefined, 'part': 'test'}
+					{'node': model.foo, 'defaultval': '', 'property': 'foo', 'namespace': 'local', 'fullname': 'local:test', 'label': undefined, 'part': 'test'},
+					{'node': model.foo, 'defaultval': '', 'property': 'foo', 'namespace': 'local', 'fullname': 'local:test', 'label': undefined, 'part': 'test'}
 				],
 				'bar': [
-					{'node': model, 'property': 'foobar', 'namespace': 'local', 'fullname': 'local:bar', 'label': undefined, 'part': 'bar'}
+					{'node': model, 'defaultval': '', 'property': 'foobar', 'namespace': 'local', 'fullname': 'local:bar', 'label': undefined, 'part': 'bar'}
 				]
 			},
 			'config': {
 				'name:bar': [
-					{'node': model, 'property': 'barbar', 'namespace': 'config', 'fullname': 'config:name:bar', 'label': 'name', 'part': 'bar'}
+					{'node': model, 'defaultval': '', 'property': 'barbar', 'namespace': 'config', 'fullname': 'config:name:bar', 'label': 'name', 'part': 'bar'}
 				]
 			}
 		})
@@ -96,48 +97,48 @@ describe('Solver', function() {
 			'barfoo': {'foo': {'bar': 3}}
 		})
 	})
-	//
-	//it('should resolve const part', function() {
-	//	Solver.defineConstant('FOO','foo')
-	//	var model = {'bar': '${const:FOO}'},
-	//		parts = Solver.extractDynamicParts(model);
-	//	Solver.resolve(parts, model);
-	//
-	//	expect(model).to.deep.equal({'bar': 'foo'})
-	//})
-	//
-	//it('should resolve config part', function() {
-	//	storage.set('FooBar', {'foo': 3});
-	//	var model = {'bar': '${config:FooBar:foo}'},
-	//		parts = Solver.extractDynamicParts(model);
-	//	Solver.resolve(parts, model);
-	//
-	//	expect(model).to.deep.equal({'bar': 3})
-	//})
-	//
-	//it('should resolve env part', function() {
-	//	process.env.foobar = 1;
-	//	var model = {'bar': '${env:foobar}'},
-	//		parts = Solver.extractDynamicParts(model);
-	//	Solver.resolve(parts, model);
-	//
-	//	expect(model).to.deep.equal({'bar': '1'})
-	//})
-	//
-	//it('should avoid circular dependencies', function() {
-	//	var model = {
-	//			'foo': '${local:bar}',
-	//			'foobar': '${local:barfoo.foo.bar}',
-	//			'bar': '${local:foo}',
-	//			'barfoo': {
-	//				'foo': {
-	//					'bar': '${local:bar}'
-	//				}
-	//			}
-	//		},
-	//		parts = Solver.extractDynamicParts(model);
-	//	expect(() => Solver.resolve(parts, model)).to.throw(Error);
-	//})
+
+	it('should resolve const part', function() {
+		Solver.defineConstant('FOO','foo')
+		var model = {'bar': '${const:FOO}'},
+			parts = Solver.extractDynamicParts(model);
+		Solver.resolve(parts, model);
+
+		expect(model).to.deep.equal({'bar': 'foo'})
+	})
+
+	it('should resolve config part', function() {
+		storage.set('FooBar', {'foo': 3});
+		var model = {'bar': '${config:FooBar:foo}'},
+			parts = Solver.extractDynamicParts(model);
+		Solver.resolve(parts, model);
+
+		expect(model).to.deep.equal({'bar': 3})
+	})
+
+	it('should resolve env part', function() {
+		process.env.foobar = 1;
+		var model = {'bar': '${env:foobar}'},
+			parts = Solver.extractDynamicParts(model);
+		Solver.resolve(parts, model);
+
+		expect(model).to.deep.equal({'bar': '1'})
+	})
+
+	it('should avoid circular dependencies', function() {
+		var model = {
+				'foo': '${local:bar}',
+				'foobar': '${local:barfoo.foo.bar}',
+				'bar': '${local:foo}',
+				'barfoo': {
+					'foo': {
+						'bar': '${local:bar}'
+					}
+				}
+			},
+			parts = Solver.extractDynamicParts(model);
+		expect(() => Solver.resolve(parts, model)).to.throw(Error);
+	})
 
 	after(function() {
 		Solver.clearConstants();

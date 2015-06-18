@@ -10,6 +10,8 @@ describe('FileLoader', function() {
 	it('should load a yaml file', function() {
 		var content = FileLoader.loadYaml(`${SANDBOX_PATH}/config.yml`),
 			expectedContent = {
+				'port': '${env:server_port|12}',
+				'address': '${env:server_address|"0.0.0.0"}',
 				'imports': [{'source': 'dev/config.yml', 'if': { 'envname': 'dev' }}],
 				'foo': {'bar': 3, 'foobar': '${local:foo.bar}'},
 				'barfoo': {
@@ -27,6 +29,8 @@ describe('FileLoader', function() {
 		process.env.envname = 'dev';
 		var contents = FileLoader.load(`${SANDBOX_PATH}/config.yml`),
 			expectedContents = [{
+				'port': '${env:server_port|12}',
+				'address': '${env:server_address|"0.0.0.0"}',
 				'foo': {'bar': 3, 'foobar': '${local:foo.bar}'},
 				'barfoo': {
 					'foo': {
