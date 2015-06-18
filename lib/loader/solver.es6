@@ -124,7 +124,7 @@ export default class Solver {
 						defaultval = defaultval || '';
 						if(defaultval !== '') {
 							if(!!defaultval.match(/(['"])(.*)(\1)/))
-								defaultval = defaultval.replace(/(['"])(.*)(\1)/g, '$2');
+								defaultval = defaultval.replace(/^(['"])(.*)(\1)$/, '$2');
 							else if(!isNaN(defaultval))
 								defaultval = Number(defaultval);
 						}

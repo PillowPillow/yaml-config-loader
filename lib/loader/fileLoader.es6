@@ -35,7 +35,7 @@ export default class FileLoader {
 		if(exists)
 			content = yaml.load(utils.loadFile(filePath));
 		else
-			throw Error(`fileNotFound: ${filePath}`);
+			throw Error(`file not found: ${filePath}`);
 
 		return content;
 	}
