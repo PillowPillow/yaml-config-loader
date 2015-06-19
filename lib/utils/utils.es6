@@ -32,7 +32,7 @@ export default class Utils {
 	}
 
 	static merge(destination = {}, ...sources) {
-		return Utils.extend(desination, sources, true);
+		return Utils.extend(destination, sources, true);
 	}
 
 	static extend(destination = {}, sources = [], deep = false) {
