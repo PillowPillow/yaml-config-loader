@@ -23,7 +23,7 @@ class Loader {
 
 		contents = FileLoader.load(path);
 
-		content = utils.extend({}, contents, true);
+		content = utils.merge({}, contents);
 
 		let parts = Solver.extractDynamicParts(content);
 		Solver.resolve(parts, content);

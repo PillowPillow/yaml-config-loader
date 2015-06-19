@@ -31,11 +31,15 @@ export default class Utils {
 		return value instanceof RegExp;
 	}
 
+	static merge(destination = {}, ...sources) {
+		return Utils.extend(desination, sources, true);
+	}
+
 	static extend(destination = {}, sources = [], deep = false) {
 
 		for(let source of sources) {
 
-			if(!this.isObject(source) && !this.isFunction(source))
+			if(!Utils.isObject(source) && !Utils.isFunction(source))
 				continue;
 
 			let keys = Object.keys(source);
@@ -44,10 +48,10 @@ export default class Utils {
 
 				let value = source[key];
 
-				if(deep && this.isObject(value) && !this.isRegExp(value)) {
-					if(!this.isObject(destination[key]))
-						destination[key] = this.isArray(value) ? [] : {};
-					this.extend(destination[key], [value], true);
+				if(deep && Utils.isObject(value) && !Utils.isRegExp(value)) {
+					if(!Utils.isObject(destination[key]))
+						destination[key] = Utils.isArray(value) ? [] : {};
+					Utils.extend(destination[key], [value], true);
 				}
 				else
 					destination[key] = value;

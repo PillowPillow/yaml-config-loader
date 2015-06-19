@@ -123,7 +123,7 @@ export default class Solver {
 						let key = label !== undefined ? `${label}:${part}` : part;
 						defaultval = defaultval || '';
 						if(defaultval !== '') {
-							if(!!defaultval.match(/(['"])(.*)(\1)/))
+							if(!!defaultval.match(/^(['"])(.*)(\1)$/))
 								defaultval = defaultval.replace(/^(['"])(.*)(\1)$/, '$2');
 							else if(!isNaN(defaultval))
 								defaultval = Number(defaultval);
