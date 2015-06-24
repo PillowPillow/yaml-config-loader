@@ -10,8 +10,8 @@ var constants = {
 	'APP_PATH': path.normalize(path.dirname(require.main.filename))
 };
 
-const VAR_REGEXP = /\$\{((const|local|config|env)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]+)(?:\|([\'\"\w\_\-\.\$\@]+))?))\}/g;
-const LOCAL_VAR_REGEXP = /\$\{((local)(?::([\w\_\-\.\$\@]+))?(?::(.+)))\}/g;
+const VAR_REGEXP = /\$\{((const|local|config|env)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]+)(?:\|(.+))?))\}/g;
+const LOCAL_VAR_REGEXP = /\$\{((local)(?::([\w\_\-\.\$\@]+))?(?::([\w\_\-\.\$\@]+)(?:\|(.+))?))\}/g;
 
 export default class Solver {
 
