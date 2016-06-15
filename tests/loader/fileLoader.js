@@ -1,5 +1,5 @@
 const LIB_PATH = `${__dirname}/../../`,
-	SANDBOX_PATH = `${__dirname}/../sandbox/`;
+	SANDBOX_PATH = `${__dirname}/../sandbox`;
 var chai = require('chai'),
 	{expect} = chai;
 
