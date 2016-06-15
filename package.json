@@ -1,6 +1,6 @@
 {
   "name": "yaml-configuration-loader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "yaml configs loader",
   "main": "index.js",
   "dependencies": {
